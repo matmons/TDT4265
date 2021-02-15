@@ -14,6 +14,8 @@ def pre_process_images(X: np.ndarray):
     assert X.shape[1] == 784,\
         f"X.shape[1]: {X.shape[1]}, should be 784"
     # TODO implement this function (Task 2a)
+    normalized = (X - X.mean())/X.std()
+    X = np.append(normalized, np.ones((X.shape[0], 1)), axis=1)
     return X
 
 
@@ -43,7 +45,7 @@ class SoftmaxModel:
         # Always reset random seed before weight init to get comparable results.
         np.random.seed(1)
         # Define number of input nodes
-        self.I = None
+        self.I = 785
         self.use_improved_sigmoid = use_improved_sigmoid
 
         # Define number of output nodes
@@ -70,9 +72,29 @@ class SoftmaxModel:
             y: output of model with shape [batch size, num_outputs]
         """
         # TODO implement this function (Task 2b)
-        # HINT: For peforming the backward pass, you can save intermediate activations in varialbes in the forward pass.
-        # such as self.hidden_layer_ouput = ...
-        return None
+        # HINT: For performing the backward pass, you can save intermediate activations in variables in the forward pass.
+        # such as self.hidden_layer_output = ...
+        # S = np.exp()/(np.exp()+1)
+        # For one neuron in the hidden layer, we calculate the input to the activation function, which is inputs*weights
+        # z: the input, is passed to the activation function - and the output should be saved in a global variable
+        # This has to be repeated for all nodes in the hidden layer, and the for all nodes in the output layer.
+        # The result should be, for each image, a vector of 10 values, giving the probability of which digit the image
+        # represents.
+        #
+        # ws[0] = (785, 64)
+        # ws1[1] = (64, 10)
+        #
+        # This implementation assumes that only the first layer has 785 inputs, and that the network only consists of 2
+        # layers. A different architecture will require some modifications to the calculations/clauses.
+
+        for weights in self.ws:
+            if X.shape[1] == weights.shape[0]:  # Check if current weight-set is from the input layer to hidden layer.
+                z = X.dot(weights)  # z (n, 64) <= X(n, 785) dot ws(785,64)  n=batch_size
+                self.hidden_layer_output = np.exp(z)/(np.exp(z)+1)  # z (n, 64)
+            else:
+                z = self.hidden_layer_output.dot(weights)  # z (n, 10) <= HiddenLayer (n,64) dot ws1 (64,10)
+                y = np.exp(z)/(np.exp(z)+1)  # y (n,10)
+        return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray,
                  targets: np.ndarray) -> None:
