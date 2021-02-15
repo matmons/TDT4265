@@ -71,7 +71,8 @@ class BaseTrainer:
             loss={},
             accuracy={}
         )
-
+        min_val_loss = 1
+        es_tracker = 0
         global_step = 0
         for epoch in range(num_epochs):
             train_loader = utils.batch_loader(

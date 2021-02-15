@@ -16,8 +16,15 @@ def calculate_accuracy(X: np.ndarray, targets: np.ndarray, model: SoftmaxModel) 
         Accuracy (float)
     """
     # TODO: Implement this function (copy from last assignment)
+    predictions = model.forward(X)
     accuracy = 0
-    return accuracy
+    for n in range(X.shape[0]):
+        prediction = np.argmax(predictions[n, :])
+        target = np.argmax(targets[n, :])
+        if prediction == target:
+            accuracy += 1
+
+    return accuracy / X.shape[0]
 
 
 class SoftmaxTrainer(BaseTrainer):
@@ -48,11 +55,11 @@ class SoftmaxTrainer(BaseTrainer):
         """
         # TODO: Implement this function (task 2c)
 
-        loss = 0
-
-        loss = cross_entropy_loss(Y_batch, logits)  # sol
-
-        return loss
+        logits = self.model.forward(X_batch)
+        self.model.backward(X_batch, logits, Y_batch)
+        self.model.ws[0] = self.model.ws[0] - self.learning_rate * self.model.grads[0]
+        self.model.ws[1] = self.model.ws[1] - self.learning_rate * self.model.grads[1]
+        return cross_entropy_loss(Y_batch, logits)
 
     def validation_step(self):
         """
@@ -116,7 +123,7 @@ if __name__ == "__main__":
           cross_entropy_loss(Y_val, model.forward(X_val)))
     print("Train accuracy:", calculate_accuracy(X_train, Y_train, model))
     print("Validation accuracy:", calculate_accuracy(X_val, Y_val, model))
-
+    print("Number of weights:", [w.shape[0]*w.shape[1] for w in model.ws])
     # Plot loss for first model (task 2c)
     plt.figure(figsize=(20, 12))
     plt.subplot(1, 2, 1)

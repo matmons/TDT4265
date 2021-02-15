@@ -63,6 +63,8 @@ class SoftmaxModel:
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
+        self.ws[0] = np.random.uniform(-1, 1, (785, 64))
+        self.hidden_layer_output = np.zeros(neurons_per_layer[0])
 
     def forward(self, X: np.ndarray) -> np.ndarray:
         """
@@ -84,16 +86,20 @@ class SoftmaxModel:
         # ws[0] = (785, 64)
         # ws1[1] = (64, 10)
         #
-        # This implementation assumes that only the first layer has 785 inputs, and that the network only consists of 2
-        # layers. A different architecture will require some modifications to the calculations/clauses.
+        # This implementation assumes that the first layer has 785 inputs and uses the sigmoid as activation
+        # function, and that the second layer uses softmax. A different architecture will require some modifications to
+        # the calculations/clauses.
 
         for weights in self.ws:
-            if X.shape[1] == weights.shape[0]:  # Check if current weight-set is from the input layer to hidden layer.
+            if X.shape[1] == weights.shape[0]:  # Single hidden layer, sigmoid activation function.
                 z = X.dot(weights)  # z (n, 64) <= X(n, 785) dot ws(785,64)  n=batch_size
                 self.hidden_layer_output = np.exp(z)/(np.exp(z)+1)  # z (n, 64)
-            else:
+            else:  # Softmax Layer
                 z = self.hidden_layer_output.dot(weights)  # z (n, 10) <= HiddenLayer (n,64) dot ws1 (64,10)
-                y = np.exp(z)/(np.exp(z)+1)  # y (n,10)
+                sum_zk = np.sum(np.exp(z), axis=1)
+                y = np.zeros(z.shape)  # y (n,10)
+                for i in range(z.shape[0]):
+                    y[i] = np.exp(z[i]) / sum_zk[i]
         return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray,
@@ -107,14 +113,29 @@ class SoftmaxModel:
             targets: labels/targets of each image of shape: [batch size, num_classes]
         """
         # TODO implement this function (Task 2b)
-        assert targets.shape == outputs.shape,\
+        # First part  of the equation (2*self.l2_reg_lambda*self.w) is part of 4b, to implement l2 regularization
+        # self.grad = 2*self.l2_reg_lambda*self.w -((1/X.shape[0])*np.transpose(X).dot((targets-outputs)))
+        mean_bz = 1 / X.shape[0]
+        diff = -(targets - outputs)
+
+        # gradient descent for output layer
+        # shape of hidden layer or batch size ???
+
+        self.grads[1] = mean_bz * np.transpose(self.hidden_layer_output).dot(diff)
+
+        # gradient descent for hidden layer
+        sigmoid_derivate = self.hidden_layer_output * (1 - self.hidden_layer_output)
+        weights_error = self.ws[1].dot(diff.T)
+        self.grads[0] = mean_bz * (X.T.dot(sigmoid_derivate * weights_error.T))
+
+        assert targets.shape == outputs.shape, \
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
         # A list of gradients.
         # For example, self.grads[0] will be the gradient for the first hidden layer
-        self.grads = []
+        # self.grads = []
 
         for grad, w in zip(self.grads, self.ws):
-            assert grad.shape == w.shape,\
+            assert grad.shape == w.shape, \
                 f"Expected the same shape. Grad shape: {grad.shape}, w: {w.shape}."
 
     def zero_grad(self) -> None:
