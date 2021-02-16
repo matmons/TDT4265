@@ -103,10 +103,8 @@ class SoftmaxModel:
                     self.hidden_layer_output = np.exp(z)/(np.exp(z)+1)  # z (n, 64)
             else:  # Output, Softmax Layer
                 z = self.hidden_layer_output.dot(weights)  # z (n, 10) <= HiddenLayer (n,64) dot ws1 (64,10)
-                sum_zk = np.sum(np.exp(z), axis=1)
-                y = np.zeros(z.shape)  # y (n,10)
-                for i in range(z.shape[0]):
-                    y[i] = np.exp(z[i]) / sum_zk[i]
+                sum_zk = np.sum(np.exp(z), axis=1, keepdims=True)
+                y = np.divide(np.exp(z), sum_zk)  # y (n,10)
         return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray,
@@ -159,6 +157,7 @@ def one_hot_encode(Y: np.ndarray, num_classes: int):
     """
     # TODO: Implement this function (copy from last assignment)
     Y_new = np.zeros((Y.shape[0], num_classes), dtype=int)
+
     for x in range(Y.shape[0]):
         num = Y[x]
         Y_new[x, num] = 1
