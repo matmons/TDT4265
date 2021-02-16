@@ -101,4 +101,5 @@ if __name__ == "__main__":
         val_history_improved_s_w_m["accuracy"], "Task 3 Model - Improved S&W&M")
     plt.ylabel("Validation Accuracy")
     plt.legend()
+
     plt.show()
