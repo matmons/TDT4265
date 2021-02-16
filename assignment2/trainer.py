@@ -1,6 +1,6 @@
 import numpy as np
 import utils
-
+from progress.bar import IncrementalBar
 
 class BaseTrainer:
 
@@ -74,7 +74,11 @@ class BaseTrainer:
         min_val_loss = 1
         es_tracker = 0
         global_step = 0
+
+        bar = IncrementalBar('Progress', max=num_epochs)
+
         for epoch in range(num_epochs):
+            bar.next()
             train_loader = utils.batch_loader(
                 self.X_train, self.Y_train, self.batch_size, shuffle=self.shuffle_dataset)
             for X_batch, Y_batch in iter(train_loader):
@@ -102,4 +106,5 @@ class BaseTrainer:
                 global_step += 1
             if es_tracker > 9:
                 break
+        bar.finish()
         return train_history, val_history

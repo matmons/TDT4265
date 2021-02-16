@@ -55,15 +55,16 @@ class SoftmaxModel:
 
         # Initialize the weights
         self.ws = []
+        mean = 0
         prev = self.I
         for size in self.neurons_per_layer:
             w_shape = (prev, size)
             print("Initializing weight to shape:", w_shape)
-            w = np.zeros(w_shape)
+            w = np.random.normal(mean, 1/np.sqrt(prev), w_shape)
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
-        self.ws[0] = np.random.uniform(-1, 1, (785, 64))
+
         self.hidden_layer_output = np.zeros(neurons_per_layer[0])
 
     def forward(self, X: np.ndarray) -> np.ndarray:
@@ -93,7 +94,10 @@ class SoftmaxModel:
         for weights in self.ws:
             if X.shape[1] == weights.shape[0]:  # Single hidden layer, sigmoid activation function.
                 z = X.dot(weights)  # z (n, 64) <= X(n, 785) dot ws(785,64)  n=batch_size
-                self.hidden_layer_output = np.exp(z)/(np.exp(z)+1)  # z (n, 64)
+                if self.use_improved_sigmoid:
+                    self.hidden_layer_output = 1.7159*np.tanh(z*2/3)
+                else:
+                    self.hidden_layer_output = np.exp(z)/(np.exp(z)+1)  # z (n, 64)
             else:  # Softmax Layer
                 z = self.hidden_layer_output.dot(weights)  # z (n, 10) <= HiddenLayer (n,64) dot ws1 (64,10)
                 sum_zk = np.sum(np.exp(z), axis=1)
