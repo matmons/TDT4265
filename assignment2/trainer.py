@@ -98,13 +98,12 @@ class BaseTrainer:
                         es_tracker = 0
                     else:
                         es_tracker += 1
-
-                    if es_tracker > 9:
+                    if es_tracker > 50:
                         # Early stop triggered
                         print('ES Triggered, Step: ', global_step, epoch)
                         break
                 global_step += 1
-            if es_tracker > 9:
+            if es_tracker > 50:
                 break
         bar.finish()
         return train_history, val_history
