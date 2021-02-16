@@ -7,15 +7,15 @@ from task2 import SoftmaxTrainer
 if __name__ == "__main__":
     # hyperparameters DO NOT CHANGE IF NOT SPECIFIED IN ASSIGNMENT TEXT
     num_epochs = 50
-    learning_rate = .1
+    learning_rate = .02
     batch_size = 32
     neurons_per_layer = [64, 10]
     momentum_gamma = .9  # Task 3 hyperparameter
     shuffle_data = True
 
-    use_improved_sigmoid = False
-    use_improved_weight_init = False
-    use_momentum = False
+    use_improved_sigmoid = True
+    use_improved_weight_init = True
+    use_momentum = True
 
     # Load dataset
     X_train, Y_train, X_val, Y_val = utils.load_full_mnist()

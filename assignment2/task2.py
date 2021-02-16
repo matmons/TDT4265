@@ -59,10 +59,12 @@ class SoftmaxTrainer(BaseTrainer):
         self.model.backward(X_batch, logits, Y_batch)
 
         for i in range(len(self.model.ws)):
-            self.model.ws[i] = self.model.ws[i] - self.learning_rate * (
-                        self.model.grads[i] + self.momentum_gamma * self.previous_grads[i])
-            self.previous_grads[i] = self.model.grads[i] + self.momentum_gamma * self.previous_grads[i]
-
+            if self.use_momentum:
+                self.model.ws[i] = self.model.ws[i] - self.learning_rate * (
+                            self.model.grads[i] + self.momentum_gamma * self.previous_grads[i])
+                self.previous_grads[i] = self.model.grads[i] + self.momentum_gamma * self.previous_grads[i]
+            else:
+                self.model.ws[i] = self.model.ws[i] - self.learning_rate * self.model.grads[i]
         return cross_entropy_loss(Y_batch, logits)
 
     def validation_step(self):
@@ -91,7 +93,7 @@ class SoftmaxTrainer(BaseTrainer):
 if __name__ == "__main__":
     # hyperparameters DO NOT CHANGE IF NOT SPECIFIED IN ASSIGNMENT TEXT
     num_epochs = 50
-    learning_rate = .02
+    learning_rate = .1
     batch_size = 32
     neurons_per_layer = [64, 10]
     momentum_gamma = .9  # Task 3 hyperparameter

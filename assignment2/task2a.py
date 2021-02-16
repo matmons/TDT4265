@@ -60,7 +60,10 @@ class SoftmaxModel:
         for size in self.neurons_per_layer:
             w_shape = (prev, size)
             print("Initializing weight to shape:", w_shape)
-            w = np.random.normal(mean, 1/np.sqrt(prev), w_shape)
+            if use_improved_weight_init:
+                w = np.random.normal(mean, 1/np.sqrt(prev), w_shape)
+            else:
+                w = np.random.uniform(-1, 1, w_shape)
             self.ws.append(w)
             prev = size
         self.grads = [None for i in range(len(self.ws))]
@@ -98,7 +101,7 @@ class SoftmaxModel:
                     self.hidden_layer_output = 1.7159*np.tanh(z*2/3)
                 else:
                     self.hidden_layer_output = np.exp(z)/(np.exp(z)+1)  # z (n, 64)
-            else:  # Softmax Layer
+            else:  # Output, Softmax Layer
                 z = self.hidden_layer_output.dot(weights)  # z (n, 10) <= HiddenLayer (n,64) dot ws1 (64,10)
                 sum_zk = np.sum(np.exp(z), axis=1)
                 y = np.zeros(z.shape)  # y (n,10)
@@ -117,20 +120,20 @@ class SoftmaxModel:
             targets: labels/targets of each image of shape: [batch size, num_classes]
         """
         # TODO implement this function (Task 2b)
-        # First part  of the equation (2*self.l2_reg_lambda*self.w) is part of 4b, to implement l2 regularization
-        # self.grad = 2*self.l2_reg_lambda*self.w -((1/X.shape[0])*np.transpose(X).dot((targets-outputs)))
-        mean_bz = 1 / X.shape[0]
-        diff = -(targets - outputs)
-
         # gradient descent for output layer
         # shape of hidden layer or batch size ???
 
-        self.grads[1] = mean_bz * np.transpose(self.hidden_layer_output).dot(diff)
+        diff = -(targets - outputs)
+        self.grads[1] = (1 / X.shape[0]) * np.transpose(self.hidden_layer_output).dot(diff)
 
         # gradient descent for hidden layer
-        sigmoid_derivate = self.hidden_layer_output * (1 - self.hidden_layer_output)
+        if self.use_improved_sigmoid:
+            sigmoid_derivative = 1.7159 * 2 / (3 * np.power(np.cosh(2*self.hidden_layer_output/3), 2))
+        else:
+            sigmoid_derivative = self.hidden_layer_output * (1 - self.hidden_layer_output)
+
         weights_error = self.ws[1].dot(diff.T)
-        self.grads[0] = mean_bz * (X.T.dot(sigmoid_derivate * weights_error.T))
+        self.grads[0] = (1 / X.shape[0]) * (X.T.dot(sigmoid_derivative * weights_error.T))
 
         assert targets.shape == outputs.shape, \
             f"Output shape: {outputs.shape}, targets: {targets.shape}"
