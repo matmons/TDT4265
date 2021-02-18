@@ -81,4 +81,5 @@ if __name__ == "__main__":
         val_history_128["accuracy"], "Task 4 Model - 128 Neurons")
     plt.ylabel("Validation Accuracy")
     plt.legend()
+    plt.savefig("task4_network_topology.png")
     plt.show()
