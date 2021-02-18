@@ -4,7 +4,7 @@ import typing
 np.random.seed(1)
 
 
-def pre_process_images(X: np.ndarray):
+def pre_process_images(X: np.ndarray, mean, sd):
     """
     Args:
         X: images of shape [batch size, 784] in the range (0, 255)
@@ -15,10 +15,10 @@ def pre_process_images(X: np.ndarray):
         f"X.shape[1]: {X.shape[1]}, should be 784"
     # TODO implement this function (Task 2a)
     #KAn være at man må implementere med hele treningsettet på en annen måte, siden X er med batchsize 
-    mean = np.mean(X)
-    sd = np.std(X)
+    #mean = np.mean(X)
+    #sd = np.std(X)
     #from last assignment 
-    normalized = (X - X.mean())/X.std()
+    normalized = (X - mean)/sd
     X = np.append(normalized, np.ones((X.shape[0], 1)), axis=1)
     return X
 

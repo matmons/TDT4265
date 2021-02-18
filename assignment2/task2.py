@@ -140,6 +140,25 @@ if __name__ == "__main__":
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Cross Entropy Loss - Average")
+    
+    #Add text with loss and accuracy information
+    plt.annotate("\n Final Train Cross Entropy Loss: {} \n Final Validation Cross Entropy Loss: {} \n Train accuracy: {} \n Validation accuracy: {}".format(
+          cross_entropy_loss(Y_train, model.forward(X_train)),
+          cross_entropy_loss(Y_val, model.forward(X_val)), calculate_accuracy(X_train, Y_train, model), calculate_accuracy(X_val, Y_val, model)),  # Your string
+
+            # The point that we'll place the text in relation to 
+            xy=(0, -0.01), 
+            # Interpret the x as axes coords, and the y as figure coords
+            xycoords=('axes fraction', 'figure fraction'),
+
+            # The distance from the point that the text will be at
+            xytext=(0, 10),  
+            # Interpret `xytext` as an offset in points...
+            textcoords='offset points',
+
+            # Any other text parameters we'd like
+            size=14, ha='left', va='bottom')
+    
     # Plot accuracy
     plt.subplot(1, 2, 2)
     plt.ylim([0.90, .99])
