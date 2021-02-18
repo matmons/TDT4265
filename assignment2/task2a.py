@@ -4,7 +4,7 @@ import typing
 np.random.seed(1)
 
 
-def pre_process_images(X: np.ndarray):
+def pre_process_images(X: np.ndarray, mean, sd):
     """
     Args:
         X: images of shape [batch size, 784] in the range (0, 255)
@@ -15,10 +15,10 @@ def pre_process_images(X: np.ndarray):
         f"X.shape[1]: {X.shape[1]}, should be 784"
     # TODO implement this function (Task 2a)
     #KAn være at man må implementere med hele treningsettet på en annen måte, siden X er med batchsize 
-    mean = np.mean(X)
-    sd = np.std(X)
+    #mean = np.mean(X)
+    #sd = np.std(X)
     #from last assignment 
-    normalized = (X - X.mean())/X.std()
+    normalized = (X - mean)/sd
     X = np.append(normalized, np.ones((X.shape[0], 1)), axis=1)
     return X
 
@@ -223,7 +223,9 @@ if __name__ == "__main__":
         f"Expected the vector to be [0,0,0,1,0,0,0,0,0,0], but got {Y}"
 
     X_train, Y_train, *_ = utils.load_full_mnist()
-    X_train = pre_process_images(X_train)
+    mean = X_train.mean()
+    sd = X_train.std()
+    X_train = pre_process_images(X_train, mean, sd)
     Y_train = one_hot_encode(Y_train, 10)
     assert X_train.shape[1] == 785,\
         f"Expected X_train to have 785 elements per image. Shape was: {X_train.shape}"
