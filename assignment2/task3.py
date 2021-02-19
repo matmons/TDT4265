@@ -95,6 +95,7 @@ if __name__ == "__main__":
         train_history_improved_s_w_m["loss"], "Task 3 Model - Improved M", npoints_to_average=10)
     plt.ylabel("Training Loss")
     plt.xlabel("Number of Training Steps")
+    plt.legend()
     
     plt.subplot(1, 2, 2)
     plt.ylim([0.88, 0.98])
