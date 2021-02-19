@@ -71,17 +71,27 @@ if __name__ == "__main__":
         train_history_64["loss"], "Task 4 Model - 64 Neurons", npoints_to_average=10)
     utils.plot_loss(
         train_history_128["loss"], "Task 4 Model - 128 Neurons", npoints_to_average=10)
+    plt.xlabel("Number of Training Steps")
+    plt.ylabel("Training loss")
+    plt.legend()
 
     plt.ylim([0, .4])
     plt.subplot(1, 2, 2)
-    plt.ylim([0.9, 1])
+    plt.ylim([0.9, 1.01])
     utils.plot_loss(
-        val_history_32["accuracy"], "Task 4 Model - 32 Neurons")
+        val_history_32["accuracy"], "Task 4 Model - 32 Neurons (Validation)")
     utils.plot_loss(
-        val_history_64["accuracy"], "Task 4 Model - 64 Neurons")
+        train_history_32["accuracy"], "Task 4 Model - 32 Neurons (Training)")
     utils.plot_loss(
-        val_history_128["accuracy"], "Task 4 Model - 128 Neurons")
-    plt.ylabel("Validation Accuracy")
+        val_history_64["accuracy"], "Task 4 Model - 64 Neurons (Validation)")
+    utils.plot_loss(
+        train_history_64["accuracy"], "Task 4 Model - 64 Neurons (Training)")
+    utils.plot_loss(
+        val_history_128["accuracy"], "Task 4 Model - 128 Neurons (Validation)")
+    utils.plot_loss(
+        train_history_128["accuracy"], "Task 4 Model - 128 Neurons (Training)")
+    plt.xlabel("Number of Training Steps")
+    plt.ylabel("Accuracy")
     plt.legend()
     plt.savefig("task4_network_topology.png")
     plt.show()
