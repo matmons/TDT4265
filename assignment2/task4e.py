@@ -45,7 +45,7 @@ if __name__ == "__main__":
         use_improved_weight_init)
     trainer_two_hidden_layers = SoftmaxTrainer(
         momentum_gamma, use_momentum,
-        model, learning_rate, batch_size, shuffle_data,
+        model_two_hidden_layers, learning_rate, batch_size, shuffle_data,
         X_train, Y_train, X_val, Y_val,
     )
     train_history_two_hidden_layers, val_history_two_hidden_layers = trainer_two_hidden_layers.train(num_epochs)
@@ -58,44 +58,40 @@ if __name__ == "__main__":
         use_improved_weight_init)
     trainer_ten_hidden_layers = SoftmaxTrainer(
         momentum_gamma, use_momentum,
-        model, learning_rate, batch_size, shuffle_data,
+        model_ten_hidden_layers, learning_rate, batch_size, shuffle_data,
         X_train, Y_train, X_val, Y_val,
     )
     train_history_ten_hidden_layers, val_history_ten_hidden_layers = trainer_ten_hidden_layers.train(num_epochs)
 
 
-    # Plot loss for first model (task 4d)
+    # Plot loss for first model (task 4e)
     plt.figure(figsize=(20, 12))
     plt.subplot(1, 2, 1)
     plt.ylim([0., .5])
     utils.plot_loss(train_history["loss"],
-                    "Training Loss", npoints_to_average=10)
-    utils.plot_loss(val_history["loss"], "Validation Loss")
+                    "Task 3 Model Training Loss", npoints_to_average=10)
+    utils.plot_loss(train_history_two_hidden_layers["loss"],
+                    "Two hidden layers training loss ", npoints_to_average=10)
+    utils.plot_loss(train_history_ten_hidden_layers["loss"],
+                    "Ten hidden layers training loss ",npoints_to_average=10 )
     plt.legend()
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Cross Entropy Loss - Average")
     #Add text with loss and accuracy information
-    plt.annotate("\n Final Train Cross Entropy Loss: {} \n Final Validation Cross Entropy Loss: {} \n Train accuracy: {} \n Validation accuracy: {}".format(
-          cross_entropy_loss(Y_train, model.forward(X_train)),
-          cross_entropy_loss(Y_val, model.forward(X_val)), calculate_accuracy(X_train, Y_train, model), calculate_accuracy(X_val, Y_val, model)),  # Your string
 
-            # The point that we'll place the text in relation to 
-            xy=(0, -0.01), 
-            # Interpret the x as axes coords, and the y as figure coords
-            xycoords=('axes fraction', 'figure fraction'),
-
-            # The distance from the point that the text will be at
-            xytext=(0, 10),  
-            # Interpret `xytext` as an offset in points...
-            textcoords='offset points',
-
-            # Any other text parameters we'd like
-            size=14, ha='left', va='bottom')
+    
     # Plot accuracy
     plt.subplot(1, 2, 2)
     plt.ylim([0.91, 1.02])
-    utils.plot_loss(train_history["accuracy"], "Training Accuracy")
-    utils.plot_loss(val_history["accuracy"], "Validation Accuracy")
+    utils.plot_loss(train_history["accuracy"],
+                    "Task 3 Model Training accuracy")
+    utils.plot_loss(val_history["accuracy"], "Task 3 Model Validation accuracy")
+    utils.plot_loss(train_history_two_hidden_layers["accuracy"],
+                    "Two hidden layers training accuracy", )
+    utils.plot_loss(val_history_two_hidden_layers["accuracy"], "Two hidden layers validation accuracy")
+    utils.plot_loss(train_history_ten_hidden_layers["accuracy"],
+                    "Ten hidden layers training accuracy", )
+    utils.plot_loss(val_history_ten_hidden_layers["accuracy"], "Ten hidden layers validation accuracy")
     plt.xlabel("Number of Training Steps")
     plt.ylabel("Accuracy")
     plt.legend()
