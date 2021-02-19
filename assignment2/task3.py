@@ -37,23 +37,24 @@ if __name__ == "__main__":
     )
     train_history, val_history = trainer.train(num_epochs)
 
-    # Improved sigmoid
-    use_improved_sigmoid = True
-    model_improved_s = SoftmaxModel(
+
+    # Improved weights
+    use_improved_weight_init = True
+
+    model_improved_w = SoftmaxModel(
         neurons_per_layer,
         use_improved_sigmoid,
         use_improved_weight_init)
-    trainer_improved_s = SoftmaxTrainer(
+    trainer_improved_w = SoftmaxTrainer(
         momentum_gamma, use_momentum,
-        model_improved_s, learning_rate, batch_size, shuffle_data,
+        model_improved_w, learning_rate, batch_size, shuffle_data,
         X_train, Y_train, X_val, Y_val,
     )
-    train_history_improved_s, val_history_improved_s = trainer_improved_s.train(
+    train_history_improved_w, val_history_improved_w = trainer_improved_w.train(
         num_epochs)
-
+    
     # Improved sigmoid & weights
-    use_improved_weight_init = True
-
+    use_improved_sigmoid = True
     model_improved_s_w = SoftmaxModel(
         neurons_per_layer,
         use_improved_sigmoid,
@@ -82,26 +83,30 @@ if __name__ == "__main__":
         num_epochs)
     plt.figure(figsize=(20,12))
     plt.subplot(1, 2, 1)
+    plt.ylim([0, .4])
     utils.plot_loss(train_history["loss"],
                     "Task 2 Model", npoints_to_average=10)
     utils.plot_loss(
-        train_history_improved_s["loss"], "Task 3 Model - Improved S", npoints_to_average=10)
+        train_history_improved_w["loss"], "Task 3 Model - Improved W", npoints_to_average=10)
     utils.plot_loss(
-        train_history_improved_s_w["loss"], "Task 3 Model - Improved W", npoints_to_average=10)
+        train_history_improved_s_w["loss"], "Task 3 Model - Improved S", npoints_to_average=10)
     utils.plot_loss(
         train_history_improved_s_w_m["loss"], "Task 3 Model - Improved M", npoints_to_average=10)
-
-    plt.ylim([0, .4])
+    plt.ylabel("Training Loss")
+    plt.xlabel("Number of Training Steps")
+    plt.legend()
+    
     plt.subplot(1, 2, 2)
-    plt.ylim([0.9, 1])
+    plt.ylim([0.88, 0.98])
     utils.plot_loss(val_history["accuracy"], "Task 3 Model")
     utils.plot_loss(
-        val_history_improved_s["accuracy"], "Task 3 Model - Improved S")
+        val_history_improved_w["accuracy"], "Task 3 Model - Improved W")
     utils.plot_loss(
         val_history_improved_s_w["accuracy"], "Task 3 Model - Improved S&W")
     utils.plot_loss(
         val_history_improved_s_w_m["accuracy"], "Task 3 Model - Improved S&W&M")
     plt.ylabel("Validation Accuracy")
+    plt.xlabel("Number of Training Steps")
     plt.legend()
     plt.savefig("task3_tricks_of_the_trade.png")
     plt.show()
