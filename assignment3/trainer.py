@@ -21,6 +21,7 @@ def compute_loss_and_accuracy(
     Returns:
         [average_loss, accuracy]: both scalar.
     """
+    losses = []
     average_loss = 0
     accuracy = 0
     # TODO: Implement this function (Task  2a)
@@ -33,6 +34,12 @@ def compute_loss_and_accuracy(
             output_probs = model(X_batch)
 
             # Compute Loss and Accuracy
+            loss = loss_criterion(output_probs, Y_batch)
+            losses.append(loss)
+            
+            accuracy = 0
+            
+    average_loss = np.mean(losses)
 
     return average_loss, accuracy
 
