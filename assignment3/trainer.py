@@ -5,6 +5,7 @@ import time
 import collections
 import utils
 import pathlib
+import numpy as np 
 
 
 def compute_loss_and_accuracy(
@@ -24,6 +25,7 @@ def compute_loss_and_accuracy(
     losses = []
     average_loss = 0
     accuracy = 0
+    num_images = 0
     # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -37,9 +39,14 @@ def compute_loss_and_accuracy(
             loss = loss_criterion(output_probs, Y_batch)
             losses.append(loss)
             
-            accuracy = 0
+            prediction = torch.argmax(output_probs, dim=1)
+            num_images += Y_batch.shape[0]
+            accuracy += (prediction == Y_batch).sum().item()
+                
+            
             
     average_loss = np.mean(losses)
+    accuracy = accuracy/ num_images
 
     return average_loss, accuracy
 
