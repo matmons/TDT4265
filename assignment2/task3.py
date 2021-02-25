@@ -81,8 +81,7 @@ if __name__ == "__main__":
     )
     train_history_improved_s_w_m, val_history_improved_s_w_m = trainer_improved_s_w_m.train(
         num_epochs)
-
-    plt.figure(figsize=(20, 12))
+    plt.figure(figsize=(20,12))
     plt.subplot(1, 2, 1)
     plt.ylim([0, .4])
     utils.plot_loss(train_history["loss"],
