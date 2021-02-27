@@ -44,8 +44,8 @@ def compute_loss_and_accuracy(
             accuracy += (prediction == Y_batch).sum().item()
                 
             
-            
-    average_loss = np.mean(losses)
+    losses = torch.Tensor(losses)        
+    average_loss = torch.mean(losses)
     accuracy = accuracy/ num_predictions
 
     return average_loss, accuracy
