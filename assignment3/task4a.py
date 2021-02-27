@@ -1,57 +1,36 @@
-import torch
+import utils
 import typing
 import time
-import collections
-import utils
 import pathlib
-import numpy as np 
+import collections
+import torch
+import torchvision
+import matplotlib.pyplot as plt
+from trainer import compute_loss_and_accuracy
+from dataloaders import load_cifar10
 
 
-def compute_loss_and_accuracy(
-        dataloader: torch.utils.data.DataLoader,
-        model: torch.nn.Module,
-        loss_criterion: torch.nn.modules.loss._Loss):
-    """
-    Computes the average loss and the accuracy over the whole dataset
-    in dataloader.
-    Args:
-        dataloder: Validation/Test dataloader
-        model: torch.nn.Module
-        loss_criterion: The loss criterion, e.g: torch.nn.CrossEntropyLoss()
-    Returns:
-        [average_loss, accuracy]: both scalar.
-    """
-    accuracy = 0
-    num_predictions = 0
-    losses = []
-    # TODO: Implement this function (Task  2a)
-    with torch.no_grad():
-        for (X_batch, Y_batch) in dataloader:
-            # Transfer images/labels to GPU VRAM, if possible
-            X_batch = utils.to_cuda(X_batch)
-            Y_batch = utils.to_cuda(Y_batch)
-            # Forward pass the images through our model
-            output_probs = model(X_batch)
-            predictions = output_probs.argmax(dim=1).squeeze()
-            Y_batch = Y_batch.squeeze()  # Y_batch.squeeze() inplace?
-            # Compute Loss and Accuracy
-            loss = loss_criterion(output_probs, Y_batch)
-            losses.append(loss)
-            
-            prediction = torch.argmax(output_probs, dim=1)
-            num_predictions += Y_batch.shape[0]
-            accuracy += (prediction == Y_batch).sum().item()
-                
-            
-    losses = torch.Tensor(losses)        
-    average_loss = torch.mean(losses)
-    accuracy = accuracy/ num_predictions
+class Model(torch.nn.Module):
+    def __init__(self):
+        super().__init__()
 
-    return average_loss, accuracy
+        self.model = torchvision.models.resnet18(pretrained=True)
+
+        self.model.fc = torch.nn.Linear(512, 10)  # No need to apply softmax,
+        # as this is done in nn.CrossEntropyLoss
+        for param in self.model.parameters():  # Freeze all parameters
+            param.requires_grad = False
+        for param in self.model.fc.parameters():  # Unfreeze the last fully-connected
+            param.requires_grad = True  # layer
+        for param in self.model.layer4.parameters():  # Unfreeze the last 5 convolutional
+            param.requires_grad = True  # layers
+
+    def forward(self, x):
+        x = self.model(x)
+        return x
 
 
 class Trainer:
-
     def __init__(self,
                  batch_size: int,
                  learning_rate: float,
@@ -76,7 +55,7 @@ class Trainer:
         print(self.model)
 
         # Define our optimizer. SGD = Stochastich Gradient Descent
-        self.optimizer = torch.optim.SGD(self.model.parameters(),
+        self.optimizer = torch.optim.Adam(self.model.parameters(),
                                          self.learning_rate)
 
         # Load our dataset
@@ -210,3 +189,41 @@ class Trainer:
                 f"Could not load best checkpoint. Did not find under: {self.checkpoint_dir}")
             return
         self.model.load_state_dict(state_dict)
+
+def create_plots(trainer: Trainer, name: str):
+    plot_path = pathlib.Path("plots")
+    plot_path.mkdir(exist_ok=True)
+    # Save plots and show them
+    plt.figure(figsize=(20, 8))
+    plt.subplot(1, 2, 1)
+    plt.title("Cross Entropy Loss")
+    utils.plot_loss(trainer.train_history["loss"], label="Training loss", npoints_to_average=10)
+    utils.plot_loss(trainer.validation_history["loss"], label="Validation loss")
+    plt.legend()
+    plt.subplot(1, 2, 2)
+    plt.title("Accuracy")
+    utils.plot_loss(trainer.validation_history["accuracy"], label="Validation Accuracy")
+    plt.legend()
+    plt.savefig(plot_path.joinpath(f"{name}_plot.png"))
+    plt.show()
+
+if __name__ == "__main__":
+    # Set the random generator seed (parameters, shuffling etc).
+    # You can try to change this and check if you still get the same result!
+    utils.set_seed(0)
+    epochs = 10
+    batch_size = 32
+    learning_rate = 5e-4
+    early_stop_count = 4
+    dataloaders = load_cifar10(batch_size)
+    model = Model()
+    trainer = Trainer(
+        batch_size,
+        learning_rate,
+        early_stop_count,
+        epochs,
+        model,
+        dataloaders
+    )
+    trainer.train()
+    create_plots(trainer, "task4")
