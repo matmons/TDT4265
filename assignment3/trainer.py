@@ -1,10 +1,10 @@
-import numpy as np
 import torch
 import typing
 import time
 import collections
 import utils
 import pathlib
+import numpy as np 
 
 
 def compute_loss_and_accuracy(
@@ -21,11 +21,9 @@ def compute_loss_and_accuracy(
     Returns:
         [average_loss, accuracy]: both scalar.
     """
-    iter_counter = 0
-    correct_count = 0
-    total_images = 0
-    average_loss = 0
-
+    accuracy = 0
+    num_predictions = 0
+    losses = []
     # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -37,13 +35,17 @@ def compute_loss_and_accuracy(
             predictions = output_probs.argmax(dim=1).squeeze()
             Y_batch = Y_batch.squeeze()  # Y_batch.squeeze() inplace?
             # Compute Loss and Accuracy
-            average_loss += loss_criterion(output_probs, Y_batch)
+            loss = loss_criterion(output_probs, Y_batch)
+            losses.append(loss)
+            
+            prediction = torch.argmax(output_probs, dim=1)
+            num_predictions += Y_batch.shape[0]
+            accuracy += (prediction == Y_batch).sum().item()
 
-            iter_counter += 1
-            correct_count += (predictions == Y_batch).sum().item()
-            total_images += predictions.shape[0]
+    average_loss = np.mean(losses)
+    accuracy = accuracy/ num_predictions
 
-    return average_loss/iter_counter, correct_count/total_images
+    return average_loss, accuracy
 
 
 class Trainer:
