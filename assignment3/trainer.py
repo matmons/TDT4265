@@ -21,8 +21,7 @@ def compute_loss_and_accuracy(
     Returns:
         [average_loss, accuracy]: both scalar.
     """
-    loss = 0
-    iter_counter = 0
+    losses = []
     accuracy = 0
     num_predictions = 0
     # TODO: Implement this function (Task  2a)
@@ -35,15 +34,16 @@ def compute_loss_and_accuracy(
             output_probs = model(X_batch)
 
             # Compute Loss and Accuracy
-            loss += loss_criterion(output_probs, Y_batch)
+            losses.append(loss_criterion(output_probs, Y_batch))
 
             prediction = torch.argmax(output_probs, dim=1)
             num_predictions += Y_batch.shape[0]
             accuracy += (prediction == Y_batch).sum().item()
-            iter_counter += 1
 
-    average_loss = loss/iter_counter
-    accuracy = accuracy / num_predictions
+    losses = torch.Tensor(losses)        
+    average_loss = torch.mean(losses)
+    accuracy = accuracy/num_predictions
+
     return average_loss, accuracy
 
 class Trainer:
