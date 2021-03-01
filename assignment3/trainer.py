@@ -4,7 +4,7 @@ import time
 import collections
 import utils
 import pathlib
-import numpy as np 
+import numpy as np
 
 
 def compute_loss_and_accuracy(
@@ -21,9 +21,10 @@ def compute_loss_and_accuracy(
     Returns:
         [average_loss, accuracy]: both scalar.
     """
+    loss = 0
+    iter_counter = 0
     accuracy = 0
     num_predictions = 0
-    losses = []
     # TODO: Implement this function (Task  2a)
     with torch.no_grad():
         for (X_batch, Y_batch) in dataloader:
@@ -32,21 +33,18 @@ def compute_loss_and_accuracy(
             Y_batch = utils.to_cuda(Y_batch)
             # Forward pass the images through our model
             output_probs = model(X_batch)
-            predictions = output_probs.argmax(dim=1).squeeze()
-            Y_batch = Y_batch.squeeze()  # Y_batch.squeeze() inplace?
+
             # Compute Loss and Accuracy
-            loss = loss_criterion(output_probs, Y_batch)
-            losses.append(loss)
-            
+            loss += loss_criterion(output_probs, Y_batch)
+
             prediction = torch.argmax(output_probs, dim=1)
             num_predictions += Y_batch.shape[0]
             accuracy += (prediction == Y_batch).sum().item()
+            iter_counter += 1
 
-    average_loss = np.mean(losses)
-    accuracy = accuracy/ num_predictions
-
+    average_loss = loss/iter_counter
+    accuracy = accuracy / num_predictions
     return average_loss, accuracy
-
 
 class Trainer:
 
