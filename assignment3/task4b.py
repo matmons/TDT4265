@@ -46,4 +46,32 @@ def torch_image_to_numpy(image: torch.Tensor):
     return image
 
 
+# Create image with all activations and weights
+# indices = [0, 1, 2, 3, 14] # To double check that our visualization is equivalent to the plot in the assignment text.
+
 indices = [14, 26, 32, 49, 52]
+
+plt.figure(figsize=(20, 12))
+for i, idx in enumerate(indices):
+    plt.subplot(2, 5, i+1)
+    plt.imshow(torch_image_to_numpy(first_conv_layer.weight[idx, :, :, :]))
+    plt.subplot(2, 5, i+6)
+    plt.imshow(torch_image_to_numpy(activation[0, idx, :, :]), cmap="gray")
+plt.savefig("plots/task_4b.png")
+
+# Task 4c
+for child in model.children():
+    if isinstance(child, torch.nn.modules.pooling.AdaptiveAvgPool2d):  # Layer after last conv
+        break
+    image = child(image)
+
+print("Activation of filter is of shape: ", image.shape)
+# zebra = plt.imread('images/zebra.jpg')
+
+plt.figure(figsize=(20, 12))
+for i in range(10):
+    plt.subplot(2, 5, i+1)
+    #plt.imshow(zebra, extent=[-1, 7, 7, -1])
+    plt.imshow(torch_image_to_numpy(image[0, i, :, :]), cmap="gray", alpha=1)
+plt.savefig("plots/task_4c.png")
+#plt.savefig("plots/task_4c_w_zebra.png")
