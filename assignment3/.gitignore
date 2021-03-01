@@ -4,3 +4,4 @@ __pycache__/
 # Notebooks
 .ipynb_checkpoints
 .idea
+checkpoints
