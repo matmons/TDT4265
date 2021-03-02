@@ -105,6 +105,14 @@ class Trainer:
             Train, validation and test.
         """
         self.model.eval()
+        #Train
+        train_loss, train_acc = compute_loss_and_accuracy(
+            self.dataloader_train, self.model, self.loss_criterion
+        )
+        self.train_history["loss"][self.global_step] = train_loss
+        self.train_history["accuracy"][self.global_step] = train_acc
+        
+        #validation
         validation_loss, validation_acc = compute_loss_and_accuracy(
             self.dataloader_val, self.model, self.loss_criterion
         )
@@ -118,10 +126,12 @@ class Trainer:
         )
         self.test_history["loss"][self.global_step] = test_loss
         self.test_history["accuracy"][self.global_step] = test_acc
+        
         print(
             f"Epoch: {self.epoch:>1}",
             f"Batches per seconds: {self.global_step / used_time:.2f}",
             f"Global step: {self.global_step:>6}",
+            f"Train Accuracy: {train_acc:.3f}",
             f"Validation Loss: {validation_loss:.2f}",
             f"Validation Accuracy: {validation_acc:.3f}",
             f"Test Loss: {test_loss:.2f}",
