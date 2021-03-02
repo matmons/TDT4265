@@ -19,13 +19,14 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1
         # transforms.RandomHorizontalFlip(),
         # transforms.RandomRotation(5),
         # transforms.RandomCrop(32, padding=4),
+        # transformation for task 4 ResNet
+        #transforms.Resize(224),
         # transformation for all tasks
-        transforms.Resize(224),
         transforms.ToTensor(),
         normalize,
     ])
     transform_test = transforms.Compose([
-        transforms.Resize(224),
+        #transforms.Resize(224),
         transforms.ToTensor(),
         normalize,
     ])
