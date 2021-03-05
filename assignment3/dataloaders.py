@@ -26,6 +26,7 @@ def load_cifar10(batch_size: int, validation_fraction: float = 0.1
         normalize,
     ])
     transform_test = transforms.Compose([
+        # transformation for task 4 ResNet
         #transforms.Resize(224),
         transforms.ToTensor(),
         normalize,

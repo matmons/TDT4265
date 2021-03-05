@@ -27,74 +27,78 @@ class ExampleModel(nn.Module):
             nn.Conv2d(
                 in_channels=image_channels,
                 out_channels=num_filters,
-                kernel_size=3,
+                kernel_size=5,
                 stride=1,
-                padding=1
+                padding=2
             ),
-            nn.ReLU(),
+            nn.LeakyReLU(0.01),
             nn.BatchNorm2d(num_filters),
             nn.Conv2d(
                 in_channels=num_filters,
                 out_channels=num_filters,
-                kernel_size=3,
+                kernel_size=5,
                 stride=1,
-                padding=1
+                padding=2
             ),
-            nn.ReLU(),
+            nn.LeakyReLU(0.01),
             nn.BatchNorm2d(num_filters),
             nn.MaxPool2d(
                kernel_size=2,
                stride=2
             ),
+            nn.Dropout(p=0.2),
+            
             #[16*16*32]
             nn.Conv2d(
                 in_channels=num_filters,
                 out_channels=64,
-                kernel_size=3,
+                kernel_size=5,
                 stride=1,
-                padding=1
+                padding=2
             ),
-            nn.ReLU(),
+            nn.LeakyReLU(0.01),
             nn.BatchNorm2d(64),
             nn.Conv2d(
                 in_channels=64,
                 out_channels=64,
-                kernel_size=3,
+                kernel_size=5,
                 stride=1,
-                padding=1
+                padding=2
             ),
-            nn.ReLU(),
+            nn.LeakyReLU(0.01),
             nn.BatchNorm2d(64),
             nn.MaxPool2d(
                kernel_size=2,
                stride=2
             ),
+            nn.Dropout(p=0.2),
             #[8*8*64]
             nn.Conv2d(
                 in_channels=64,
                 out_channels=128,
-                kernel_size=3,
+                kernel_size=5,
                 stride=1,
-                padding=1
+                padding=2
             ),
-            nn.ReLU(),
+            nn.LeakyReLU(0.01),
             nn.BatchNorm2d(128),
             nn.Conv2d(
                 in_channels=128,
                 out_channels=128,
-                kernel_size=3,
+                kernel_size=5,
                 stride=1,
-                padding=1
+                padding=2
             ),
-            nn.ReLU(),
+            nn.LeakyReLU(0.01),
             nn.BatchNorm2d(128),
             nn.MaxPool2d(
                 kernel_size=2,
                 stride=2
-            )
+            ),
+            nn.Dropout(p=0.2)
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 4*4*128
+        self.num_output_features = 4*4*128#8*8*784 #32*32*32
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
@@ -102,9 +106,9 @@ class ExampleModel(nn.Module):
         # included with nn.CrossEntropyLoss
         self.classifier = nn.Sequential(
             nn.Linear(self.num_output_features, 64),
-            
-            nn.ReLU(),
+            nn.LeakyReLU(0.01),
             nn.BatchNorm1d(64),
+            nn.Dropout(p=0.2),
             nn.Linear(64, num_classes)
         )
 
@@ -117,7 +121,6 @@ class ExampleModel(nn.Module):
         # TODO: Implement this function (Task  2a)
         batch_size = x.shape[0]
         out = self.feature_extractor(x)
-        #flatten image
         out = out.view(-1, self.num_output_features)
         out = self.classifier(out)
         expected_shape = (batch_size, self.num_classes)
@@ -133,19 +136,18 @@ def create_plots(trainer: Trainer, name: str):
     plt.figure(figsize=(20, 8))
     plt.subplot(1, 2, 1)
     plt.title("Cross Entropy Loss")
-    #loss for training and validation loss for best model 
     utils.plot_loss(trainer.train_history["loss"], label="Training loss", npoints_to_average=10)
     utils.plot_loss(trainer.validation_history["loss"], label="Validation loss")
     plt.legend()
     plt.subplot(1, 2, 2)
     plt.title("Accuracy")
-    #plot validation accuracy that can be used for the best model, and for the further imporvement  
+    utils.plot_loss(trainer.train_history["accuracy"], label="Train Accuracy")
     utils.plot_loss(trainer.validation_history["accuracy"], label="Validation Accuracy")
-    utils.plot_loss(trainer.train_history["accuracy"], label="Trainer Accuracy")
     utils.plot_loss(trainer.test_history["accuracy"], label="Test Accuracy")
     plt.legend()
     plt.savefig(plot_path.joinpath(f"{name}_plot.png"))
-    plt.show() 
+    plt.show()
+
 
 if __name__ == "__main__":
     # Set the random generator seed (parameters, shuffling etc).
@@ -166,4 +168,4 @@ if __name__ == "__main__":
         dataloaders
     )
     trainer.train()
-    create_plots(trainer, "task3_network1")
+    create_plots(trainer, "task3_network1_80")
