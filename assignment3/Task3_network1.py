@@ -46,8 +46,6 @@ class ExampleModel(nn.Module):
                kernel_size=2,
                stride=2
             ),
-            nn.Dropout(p=0.2),
-            
             #[16*16*32]
             nn.Conv2d(
                 in_channels=num_filters,
@@ -71,7 +69,6 @@ class ExampleModel(nn.Module):
                kernel_size=2,
                stride=2
             ),
-            nn.Dropout(p=0.3),
             #[8*8*64]
             nn.Conv2d(
                 in_channels=64,
@@ -94,8 +91,7 @@ class ExampleModel(nn.Module):
             nn.MaxPool2d(
                 kernel_size=2,
                 stride=2
-            ),
-            nn.Dropout(p=0.4)
+            )
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
         self.num_output_features = 4*4*128
@@ -107,8 +103,6 @@ class ExampleModel(nn.Module):
         self.classifier = nn.Sequential(
             nn.Linear(self.num_output_features, 64),
             nn.ReLU(),
-            nn.Dropout(p=0.5),
-            ##leakyRelu
             nn.Linear(64, num_classes)
         )
 
@@ -145,28 +139,11 @@ def create_plots(trainer: Trainer, name: str):
     plt.title("Accuracy")
     #plot validation accuracy that can be used for the best model, and for the further imporvement  
     utils.plot_loss(trainer.validation_history["accuracy"], label="Validation Accuracy")
-    #utils.plot_loss(trainer.trainer_history["accuracy"], label="Trainer Accuracy")
+    utils.plot_loss(trainer.train_history["accuracy"], label="Trainer Accuracy")
     utils.plot_loss(trainer.test_history["accuracy"], label="Test Accuracy")
     plt.legend()
     plt.savefig(plot_path.joinpath(f"{name}_plot.png"))
-    plt.show()
-    
-    #for method with largetst amount of improvement, plot of model before and after applying this tecnique
-    plot_path = pathlib.Path("plots")
-    plot_path.mkdir(exist_ok=True)
-    # Save plots and show them
-    plt.figure(figsize=(20, 8))
-    plt.subplot(1, 2, 1)
-    plt.title("Cross Entropy Loss")
-    #loss for training and validation loss for best model 
-    utils.plot_loss(trainer.train_history["loss"], label="Training loss without .. ", npoints_to_average=10)
-    utils.plot_loss(trainer.validation_history["loss"], label="Validation without .. ")
-    utils.plot_loss(trainer2.train_history["loss"], label="Training loss with .. ", npoints_to_average=10)
-    utils.plot_loss(trainer2.validation_history["loss"], label="Validation loss with .. ")
-    plt.legend()
-    plt.savefig(plot_path.joinpath(f"{name}_best_technique.png"))
-    plt.show()
-
+    plt.show() 
 
 if __name__ == "__main__":
     # Set the random generator seed (parameters, shuffling etc).

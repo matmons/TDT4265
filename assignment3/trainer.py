@@ -134,6 +134,7 @@ class Trainer:
             f"Epoch: {self.epoch:>1}",
             f"Batches per seconds: {self.global_step / used_time:.2f}",
             f"Global step: {self.global_step:>6}",
+            f"Train Loss: {train_loss:.2f}",
             f"Train Accuracy: {train_acc:.3f}",
             f"Validation Loss: {validation_loss:.2f}",
             f"Validation Accuracy: {validation_acc:.3f}",

@@ -30,12 +30,12 @@ class ExampleModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.ReLU(),
-            nn.LeakyReLU(0.1),
+            nn.LeakyReLU(0.01),
             nn.MaxPool2d(
                 kernel_size=2,
                 stride=2
             ),
+            nn.Dropout(p=0.2),
             nn.Conv2d(
                 in_channels=num_filters,
                 out_channels=64,
@@ -43,12 +43,12 @@ class ExampleModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.ReLU(),
-            nn.LeakyReLU(0.1),
+            nn.LeakyReLU(0.01),
             nn.MaxPool2d(
                 kernel_size=2,
                 stride=2
             ),
+            nn.Dropout(p=0.2),
             nn.Conv2d(
                 in_channels=64,
                 out_channels=128,
@@ -56,12 +56,12 @@ class ExampleModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.ReLU(),
-            nn.LeakyReLU(0.1),
+            nn.LeakyReLU(0.01),
             nn.MaxPool2d(
                 kernel_size=2,
                 stride=2
             ),
+            nn.Dropout(p=0.2),
             nn.Conv2d(
                 in_channels=128,
                 out_channels=256,
@@ -69,15 +69,15 @@ class ExampleModel(nn.Module):
                 stride=1,
                 padding=2
             ),
-            #nn.ReLU(),
-            nn.LeakyReLU(0.1),
+            nn.LeakyReLU(0.01),
             nn.MaxPool2d(
                 kernel_size=2,
                 stride=2
-            )
+            ),
+            nn.Dropout(p=0.2)
         )
         # The output of feature_extractor will be [batch_size, num_filters, 16, 16]
-        self.num_output_features = 2*2*256#8*8*784 #32*32*32
+        self.num_output_features = 2*2*256
         # Initialize our last fully connected layer
         # Inputs all extracted features from the convolutional layers
         # Outputs num_classes predictions, 1 for each class.
@@ -85,10 +85,9 @@ class ExampleModel(nn.Module):
         # included with nn.CrossEntropyLoss
         self.classifier = nn.Sequential(
             nn.Linear(self.num_output_features, 64),
-            ##nn.ReLU(),
-            nn.LeakyReLU(0.1),
+            nn.LeakyReLU(0.01),
+            nn.Dropout(p=0.2),
             nn.Linear(64, num_classes)
-            #nn.Linear(self.num_output_features, num_classes)
         )
 
     def forward(self, x):
@@ -120,8 +119,9 @@ def create_plots(trainer: Trainer, name: str):
     plt.legend()
     plt.subplot(1, 2, 2)
     plt.title("Accuracy")
+    utils.plot_loss(trainer.train_history["accuracy"], label="Train Accuracy")
     utils.plot_loss(trainer.validation_history["accuracy"], label="Validation Accuracy")
-    tils.plot_loss(trainer.test_history["accuracy"], label="Test Accuracy")
+    utils.plot_loss(trainer.test_history["accuracy"], label="Test Accuracy")
     plt.legend()
     plt.savefig(plot_path.joinpath(f"{name}_plot.png"))
     plt.show()
