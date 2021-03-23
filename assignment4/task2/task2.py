@@ -87,22 +87,21 @@ def get_all_box_matches(prediction_boxes, gt_boxes, iou_threshold):
             Each row includes [xmin, ymin, xmax, ymax]
     """
     # Predefines matrix
-    candidate_boxes = np.zeros((len(prediction_boxes), len(gt_boxes)))
-    for i, box in enumerate(prediction_boxes):
-        for j, gt_box in enumerate(gt_boxes):
-            iou = calculate_iou(box, gt_box)
-            if iou >= iou_threshold:
-                candidate_boxes[i, j] = iou
-
     match_pred = []
     match_gt = []
-    for i, row in enumerate(candidate_boxes):
-        gt_index = np.argmax(row)
-        if candidate_boxes[i, gt_index] > 0:
-            match_pred.append(prediction_boxes[i])
-            match_gt.append(gt_boxes[gt_index])
+    for gt_box in gt_boxes:
+        best_iou = 0
+        best_box = []
+        for box in prediction_boxes:
+            iou = calculate_iou(box, gt_box)
+            if iou >= iou_threshold and iou > best_iou:
+                best_iou = iou
+                best_box = box
+        if len(best_box):
+            match_pred.append(best_box)
+            match_gt.append(gt_box)
 
-    match_pred = np.array(match_pred).reshape(len(match_pred), 4)  # not sure if reshape is necessary, tests dont test it
+    match_pred = np.array(match_pred).reshape(len(match_pred), 4)
     match_gt = np.array(match_gt).reshape(len(match_pred), 4)
     return match_pred, match_gt
 
@@ -239,9 +238,9 @@ def calculate_mean_average_precision(precisions, recalls):
     # YOUR CODE HERE
     average_precision = 0
     for recall in recall_levels:
-        precisions_r = [p for p, r in zip(precisions, recalls) if r >= recall]
-        if precisions_r:
-            average_precision += max(precisions_r)
+        precisions_to_right = [p for p, r in zip(precisions, recalls) if r >= round(recall, 1)]
+        if precisions_to_right:
+            average_precision += max(precisions_to_right)
     return average_precision / steps
 
 
