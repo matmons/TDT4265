@@ -238,11 +238,10 @@ def calculate_mean_average_precision(precisions, recalls):
     recall_levels = np.linspace(0, 1.0, steps)
     # YOUR CODE HERE
     average_precision = 0
-    for r in recall_levels:
-        indices = [i for i, j in enumerate(recalls) if j >= round(r, 1)]
-        precisions_to_right = [precisions[i] for i in indices]
-        if precisions_to_right:
-            average_precision += max(precisions_to_right)
+    for recall in recall_levels:
+        precisions_r = [p for p, r in zip(precisions, recalls) if r >= recall]
+        if precisions_r:
+            average_precision += max(precisions_r)
     return average_precision / steps
 
 
