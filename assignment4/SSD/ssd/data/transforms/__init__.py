@@ -8,8 +8,8 @@ from torchvision import transforms
 def build_transforms(cfg, is_train=True):
     if is_train:
         transform = [
-            RandomMirror(),
-            RandomSampleCrop(),
+            #RandomMirror(),
+            #RandomSampleCrop(),
             ConvertFromInts(),
             ToPercentCoords(),
             Resize(cfg.INPUT.IMAGE_SIZE),

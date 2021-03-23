@@ -59,7 +59,7 @@ class BasicModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Conv2d(
                 in_channels=64,
-                out_channels=128,
+                out_channels=output_channels[0],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -69,7 +69,7 @@ class BasicModel(torch.nn.Module):
             # resolution [19x19]
             torch.nn.ReLU(),
             torch.nn.Conv2d(
-                in_channels=128,
+                in_channels=output_channels[0],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
@@ -78,7 +78,7 @@ class BasicModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=256,
+                out_channels=output_channels[1],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -89,7 +89,7 @@ class BasicModel(torch.nn.Module):
         layer3 = torch.nn.Sequential(
             torch.nn.ReLU(),
             torch.nn.Conv2d(
-                in_channels=256,
+                in_channels=output_channels[1],
                 out_channels=256,
                 kernel_size=3,
                 stride=1,
@@ -98,7 +98,7 @@ class BasicModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Conv2d(
                 in_channels=256,
-                out_channels=128,
+                out_channels=output_channels[2],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -109,7 +109,7 @@ class BasicModel(torch.nn.Module):
             # Resolution [5x5]
             torch.nn.ReLU(),
             torch.nn.Conv2d(
-                in_channels=128,
+                in_channels=output_channels[2],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
@@ -118,7 +118,7 @@ class BasicModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=128,
+                out_channels=output_channels[3],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -129,7 +129,7 @@ class BasicModel(torch.nn.Module):
             # Resolution [3x3]
             torch.nn.ReLU(),
             torch.nn.Conv2d(
-                in_channels=128,
+                in_channels=output_channels[3],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
@@ -138,7 +138,7 @@ class BasicModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=64,
+                out_channels=output_channels[4],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -149,7 +149,7 @@ class BasicModel(torch.nn.Module):
             # Resolution [1x1]
             torch.nn.ReLU(),
             torch.nn.Conv2d(
-                in_channels=64,
+                in_channels=output_channels[4],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
@@ -158,13 +158,14 @@ class BasicModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=64,
+                out_channels=output_channels[5],
                 kernel_size=3,
                 stride=2,
                 padding=0
             )
         )
         self.feature_extractor.append(layer6)
+        print("Basic Model")
         print(torch.cuda.is_available())
         """
         self.classifier = torch.nn.Sequential(
@@ -240,7 +241,10 @@ class BasicImprovedModel(torch.nn.Module):
                 kernel_size=2,
                 stride=2
             ),
-            torch.nn.LeakyReLU(),
+            #torch.nn.Dropout(0.2),
+            torch.nn.BatchNorm2d(32),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=32,
                 out_channels=64,
@@ -252,7 +256,10 @@ class BasicImprovedModel(torch.nn.Module):
                 kernel_size=2,
                 stride=2
             ),
-            torch.nn.LeakyReLU(),
+            #torch.nn.Dropout(0.2),
+            torch.nn.BatchNorm2d(64),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=64,
                 out_channels=64,
@@ -260,10 +267,12 @@ class BasicImprovedModel(torch.nn.Module):
                 stride=1,
                 padding=1
             ),
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(64),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=64,
-                out_channels=128,
+                out_channels=output_channels[0],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -271,18 +280,23 @@ class BasicImprovedModel(torch.nn.Module):
         self.feature_extractor.append(layer1)
         layer2 = torch.nn.Sequential(
             # resolution [19x19]
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(output_channels[0]),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
-                in_channels=128,
+                in_channels=output_channels[0],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
                 padding=1
             ),
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(128),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=256,
+                out_channels=output_channels[1],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -291,18 +305,23 @@ class BasicImprovedModel(torch.nn.Module):
         self.feature_extractor.append(layer2)
         # Resolution [9x9]
         layer3 = torch.nn.Sequential(
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(output_channels[1]),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
-                in_channels=256,
+                in_channels=output_channels[1],
                 out_channels=256,
                 kernel_size=3,
                 stride=1,
                 padding=1
             ),
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(256),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=256,
-                out_channels=128,
+                out_channels=output_channels[2],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -311,18 +330,23 @@ class BasicImprovedModel(torch.nn.Module):
         self.feature_extractor.append(layer3)
         layer4 = torch.nn.Sequential(
             # Resolution [5x5]
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(output_channels[2]),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
-                in_channels=128,
+                in_channels=output_channels[2],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
                 padding=1
             ),
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(128),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=128,
+                out_channels=output_channels[3],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -331,18 +355,23 @@ class BasicImprovedModel(torch.nn.Module):
         self.feature_extractor.append(layer4)
         layer5 = torch.nn.Sequential(
             # Resolution [3x3]
-            torch.nn.LeakyReLU(),
+            torch.nn.BatchNorm2d(output_channels[3]),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
-                in_channels=128,
+                in_channels=output_channels[3],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
                 padding=1
             ),
-            torch.nn.ReLU(),
+            torch.nn.BatchNorm2d(128),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=64,
+                out_channels=output_channels[4],
                 kernel_size=3,
                 stride=2,
                 padding=1
@@ -351,24 +380,30 @@ class BasicImprovedModel(torch.nn.Module):
         self.feature_extractor.append(layer5)
         layer6 = torch.nn.Sequential(
             # Resolution [1x1]
-            torch.nn.ReLU(),
+            torch.nn.BatchNorm2d(output_channels[4]),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
-                in_channels=64,
+                in_channels=output_channels[4],
                 out_channels=128,
                 kernel_size=3,
                 stride=1,
                 padding=1
             ),
-            torch.nn.ReLU(),
+            torch.nn.BatchNorm2d(128),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
-                out_channels=64,
+                out_channels=output_channels[5],
                 kernel_size=3,
                 stride=2,
                 padding=0
             )
         )
         self.feature_extractor.append(layer6)
+        print("Improved basic model")
         print(torch.cuda.is_available())
         """
         self.classifier = torch.nn.Sequential(
