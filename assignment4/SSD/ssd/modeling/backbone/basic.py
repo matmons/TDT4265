@@ -241,8 +241,10 @@ class BasicImprovedModel(torch.nn.Module):
                 kernel_size=2,
                 stride=2
             ),
+            #torch.nn.Dropout(0.2),
             torch.nn.BatchNorm2d(32),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=32,
                 out_channels=64,
@@ -254,8 +256,10 @@ class BasicImprovedModel(torch.nn.Module):
                 kernel_size=2,
                 stride=2
             ),
+            #torch.nn.Dropout(0.2),
             torch.nn.BatchNorm2d(64),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=64,
                 out_channels=64,
@@ -264,7 +268,8 @@ class BasicImprovedModel(torch.nn.Module):
                 padding=1
             ),
             torch.nn.BatchNorm2d(64),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=64,
                 out_channels=output_channels[0],
@@ -276,7 +281,8 @@ class BasicImprovedModel(torch.nn.Module):
         layer2 = torch.nn.Sequential(
             # resolution [19x19]
             torch.nn.BatchNorm2d(output_channels[0]),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=output_channels[0],
                 out_channels=128,
@@ -285,7 +291,9 @@ class BasicImprovedModel(torch.nn.Module):
                 padding=1
             ),
             torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
                 out_channels=output_channels[1],
@@ -298,7 +306,8 @@ class BasicImprovedModel(torch.nn.Module):
         # Resolution [9x9]
         layer3 = torch.nn.Sequential(
             torch.nn.BatchNorm2d(output_channels[1]),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=output_channels[1],
                 out_channels=256,
@@ -307,7 +316,9 @@ class BasicImprovedModel(torch.nn.Module):
                 padding=1
             ),
             torch.nn.BatchNorm2d(256),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=256,
                 out_channels=output_channels[2],
@@ -320,7 +331,8 @@ class BasicImprovedModel(torch.nn.Module):
         layer4 = torch.nn.Sequential(
             # Resolution [5x5]
             torch.nn.BatchNorm2d(output_channels[2]),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=output_channels[2],
                 out_channels=128,
@@ -329,7 +341,9 @@ class BasicImprovedModel(torch.nn.Module):
                 padding=1
             ),
             torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
                 out_channels=output_channels[3],
@@ -342,7 +356,8 @@ class BasicImprovedModel(torch.nn.Module):
         layer5 = torch.nn.Sequential(
             # Resolution [3x3]
             torch.nn.BatchNorm2d(output_channels[3]),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=output_channels[3],
                 out_channels=128,
@@ -351,7 +366,9 @@ class BasicImprovedModel(torch.nn.Module):
                 padding=1
             ),
             torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
                 out_channels=output_channels[4],
@@ -364,7 +381,8 @@ class BasicImprovedModel(torch.nn.Module):
         layer6 = torch.nn.Sequential(
             # Resolution [1x1]
             torch.nn.BatchNorm2d(output_channels[4]),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
             torch.nn.Conv2d(
                 in_channels=output_channels[4],
                 out_channels=128,
@@ -373,7 +391,9 @@ class BasicImprovedModel(torch.nn.Module):
                 padding=1
             ),
             torch.nn.BatchNorm2d(128),
-            torch.nn.LeakyReLU(0.2),
+            #torch.nn.ReLU(),
+            torch.nn.LeakyReLU(0.005),
+            #torch.nn.Dropout(0.2),
             torch.nn.Conv2d(
                 in_channels=128,
                 out_channels=output_channels[5],
