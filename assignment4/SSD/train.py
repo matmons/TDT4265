@@ -37,7 +37,7 @@ def start_train(cfg):
 
     
     backbone_name = cfg.MODEL.BACKBONE.NAME
-    if backbone_name == "basic":
+    if backbone_name == "basic" or backbone_name == "vgg":
         optimizer = torch.optim.SGD(
             model.parameters(),
             lr=cfg.SOLVER.LR,
