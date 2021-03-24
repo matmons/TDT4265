@@ -1,0 +1,26 @@
+MODEL:
+    NUM_CLASSES: 11
+    THRESHOLD: 0.55
+    BACKBONE:
+        NAME: 'basicimproved'
+        PRETRAINED: False
+        OUT_CHANNELS: [128, 256, 128, 128, 64, 64]
+        INPUT_CHANNELS: 3
+    PRIORS:
+        #Changed for assignment 4c/d
+        MIN_SIZES: [[10, 10], [40, 40], [90, 90],[142, 142], [193, 193], [244, 244]]
+        MAX_SIZES: [[60, 60], [111, 111], [162, 162], [213, 213], [264, 264], [315, 315]]
+INPUT:
+    IMAGE_SIZE: [300, 300]
+DATASETS:
+    TRAIN: ("mnist_detection_train", "mnist_detection_val")
+    TEST: ("mnist_detection_val", )
+SOLVER:
+    MAX_ITER: 10000
+    GAMMA: 0.1
+    BATCH_SIZE: 16
+    #Changed for assignment 4c/d
+    LR: 2e-4
+    WEIGHT_DECAY: 5e-3
+OUTPUT_DIR: 'outputs/basic'
+DATASET_DIR: "/work/datasets"
